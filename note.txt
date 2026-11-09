@@ -1,0 +1,11 @@
+creating qdrant database:
+open docker. and past it in windows powershell
+
+docker pull qdrant/qdrant
+
+docker run -d \
+  --name qdrant \
+  -p 6333:6333 \
+  -p 6334:6334 \
+  -v qdrant_storage:/qdrant/storage \
+  qdrant/qdrant
