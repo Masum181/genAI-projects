@@ -13,6 +13,9 @@ class TextChunk:
     text: str
     page_number: int
     chunk_index: int
+    char_start: int
+    char_end: int
+    token_count: int
 
 
 class Chunker(Protocol):

@@ -34,6 +34,13 @@ sequenceDiagram
     API-->>User: task status poll or webhook update
 ```
 
+The document upload and version endpoints publish the document, version, and
+ingestion-job IDs to `app.workers.ingestion_worker.ingest_document`. The task
+persists `running`, `succeeded`, `failed`, or `dead_letter` job state and only marks
+a document indexed after the Qdrant upsert and PostgreSQL chunk persistence
+complete. Qdrant point IDs are deterministic per tenant, document, version, and
+chunk so retries can safely repeat an upsert.
+
 ## 4. Retry policy
 - Exponential backoff with jitter.
 - Maximum retries bounded by tenant policy.

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Workspace - Enterprise RAG{% endblock %}
+{% block content %}
+<h1>Welcome, {{ principal.user.full_name }}</h1>
+<p class="muted">Organization {{ principal.organization_id }}</p>
+<div class="grid">
+  <section class="card"><h2>{{ document_count }}</h2><p>Authorized documents</p><a class="button" href="/ui/documents">Browse documents</a></section>
+  <section class="card"><h2>{{ conversation_count }}</h2><p>Your conversations</p><a class="button" href="/ui/conversations">View history</a></section>
+</div>
+<section class="card">
+  <h2>API</h2>
+  <p>Use the versioned API or explore its OpenAPI documentation.</p>
+  <a class="button" href="/docs">Open API docs</a>
+</section>
+{% endblock %}

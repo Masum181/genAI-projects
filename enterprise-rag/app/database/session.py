@@ -2,6 +2,7 @@
 
 from collections.abc import AsyncIterator
 
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
@@ -26,3 +27,9 @@ async def get_db() -> AsyncIterator[AsyncSession]:
     """Yield a request-scoped database session and always close it."""
     async with async_session_factory() as session:
         yield session
+
+
+async def check_database_connection() -> None:
+    """Execute a lightweight query to verify PostgreSQL connectivity."""
+    async with engine.connect() as connection:
+        await connection.execute(text("SELECT 1"))

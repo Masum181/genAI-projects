@@ -19,7 +19,5 @@ class DocumentExtractor(Protocol):
     def supports(self, filename: str, content_type: str | None = None) -> bool:
         """Return whether this extractor accepts the indicated document."""
 
-    async def extract(
-        self, content: bytes, *, filename: str
-    ) -> list[ExtractedPage]:
+    async def extract(self, content: bytes, *, filename: str) -> list[ExtractedPage]:
         """Extract ordered page text and source metadata."""

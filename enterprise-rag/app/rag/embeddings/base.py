@@ -11,3 +11,7 @@ class EmbeddingProvider(Protocol):
 
     async def embed_query(self, text: str) -> list[float]:
         """Embed one user query in the same vector space."""
+
+
+class EmbeddingProviderError(RuntimeError):
+    """The configured embedding provider cannot run or returned invalid data."""

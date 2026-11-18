@@ -137,6 +137,7 @@
 ### POST /api/v1/chat
 - Purpose: Ask a question and receive grounded answer.
 - Permission: `chat:ask`
+- Set `stream` to `true` to receive the answer as server-sent events.
 - Request:
 ```json
 {
@@ -168,6 +169,11 @@
 ### POST /api/v1/chat/stream
 - Purpose: SSE streaming answer.
 - Permission: `chat:ask`
+- Frames use `event: token` for answer text and `event: end` for status,
+  citations, and confidence. Each frame includes the conversation, request, and
+  assistant message IDs.
+- Streaming currently sends buffered answer text after generation and validation;
+  it does not expose provider token-by-token generation.
 
 ## 11. Feedback API
 ### POST /api/v1/feedback
@@ -226,3 +232,39 @@
 - [05-database-design.md](./05-database-design.md)
 - [03-roles-and-permissions.md](./03-roles-and-permissions.md)
 - [openapi-design-guidelines.md](./openapi-design-guidelines.md)
+
+## 19. Current API and browser implementation
+The FastAPI application currently mounts the following API groups under `/api/v1`:
+authentication and API keys; organizations and users; departments and department
+members; document upload, versions, metadata, download, deletion, and ACLs; ingestion
+job status; conversations, chat, and feedback; analytics; and administrative health
+and metrics. Authenticated API responses use the success envelope described above,
+and errors include a request ID.
+
+Document uploads use `multipart/form-data` (`file`, `title`, optional
+`document_type`, and optional `department_id`) and return an accepted document and
+ingestion-job ID. Downloads use `GET /documents/{document_id}/download`; ACLs are
+replaced with `PUT /documents/{document_id}/permissions`. The browser UI is served
+at `/login`, `/ui/`, `/ui/documents`, and `/ui/conversations`.
+
+Document uploads create a queued ingestion job and publish it to the Celery worker.
+The worker extracts supported PDF, DOCX, XLSX, TXT, and HTML files, creates
+overlapping text chunks and embeddings, upserts tenant-scoped points into Qdrant,
+and records indexed chunks and job state in PostgreSQL. Poll the ingestion-job
+endpoint to confirm whether processing succeeded; queue, extraction, embedding,
+or Qdrant failures are recorded and retried before being dead-lettered. The API
+and worker images install the `ai` extra for the configured Sentence Transformers
+embedding provider.
+
+Chat resolves current indexed document versions through tenant and document ACL
+filters before dense Qdrant and PostgreSQL full-text retrieval. It fuses the
+rankings, verifies candidate chunks against PostgreSQL again, reranks the
+authorized evidence, and validates generated citation IDs against evidence sent
+to the model. Answers, citations, and usage are persisted with the conversation.
+No matching authorized evidence produces an insufficient-evidence answer;
+unavailable retrieval or generation providers produce `503` responses.
+
+The default answer provider is Ollama; OpenAI and Gemini adapters are available
+when their optional dependencies and credentials are configured. Embeddings use
+Sentence Transformers. Document ingestion alone is not sufficient: the embedding,
+Qdrant, retrieval, and generation providers must also be configured and available.

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Conversations - Enterprise RAG{% endblock %}
+{% block content %}
+<h1>Conversation history</h1>
+<section class="card">
+  {% if conversations %}
+  <table>
+    <thead><tr><th>Title</th><th>Status</th><th>Last updated</th></tr></thead>
+    <tbody>
+      {% for conversation in conversations %}
+      <tr><td>{{ conversation.title or "Untitled conversation" }}</td><td>{{ conversation.status }}</td><td>{{ conversation.updated_at }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No conversations yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

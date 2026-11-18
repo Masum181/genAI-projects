@@ -2,9 +2,21 @@
 
 from typing import Protocol
 
+from app.rag.prompts.rag_prompt import GroundedPrompt
+
 
 class LLMGenerator(Protocol):
     """Contract shared by hosted and local language model providers."""
 
-    async def generate(self, prompt: str) -> str:
+    provider: str
+    model_name: str
+
+    async def generate(self, prompt: GroundedPrompt) -> str:
         """Generate an answer from an already constructed prompt."""
+
+    async def close(self) -> None:
+        """Release provider client resources."""
+
+
+class LLMProviderError(RuntimeError):
+    """A provider is unavailable or returned an unusable response."""

@@ -15,10 +15,13 @@ dependencies = [
     "boto3>=1.35,<2",
     "celery[redis]>=5.4,<6",
     "fastapi>=0.115,<1",
+    "email-validator>=2.2,<3",
+    "jinja2>=3.1,<4",
     "minio>=7.2,<8",
     "openpyxl>=3.1,<4",
     "pydantic>=2.8,<3",
     "pydantic-settings>=2.4,<3",
+    "python-multipart>=0.0.9,<1",
     "PyMuPDF>=1.24,<2",
     "python-docx>=1.1,<2",
     "qdrant-client>=1.11,<2",
@@ -54,6 +57,11 @@ line-length = 88
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+ignore = ["UP017"]
 
 [tool.ruff.lint.isort]
 known-third-party = ["alembic"]
+
+[tool.ruff.lint.per-file-ignores]
+"app/api/**/*.py" = ["B008"]
+"app/web.py" = ["B008"]

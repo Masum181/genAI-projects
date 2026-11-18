@@ -2,8 +2,9 @@
 
 This repository is the Python 3.11+ foundation for a multi-tenant RAG SaaS
 application. It uses a modular monolith with clear API, service, repository,
-integration, and RAG boundaries. Business workflows, authentication, and
-document processing are intentionally not implemented yet.
+integration, and RAG boundaries. Document uploads are stored and processed by a
+Celery ingestion worker that indexes extracted chunks in Qdrant. Retrieval and
+grounded chat workflows are still under development.
 
 ## Architecture map
 
@@ -13,10 +14,11 @@ document processing are intentionally not implemented yet.
   boundaries, and Pydantic contract boundaries.
 - `app/services`, `app/repositories`: use-case orchestration and relational
   persistence boundaries.
-- `app/rag`: extraction, chunking, embedding, retrieval, reranking, and generation
-  interfaces; concrete business workflows remain future work.
+- `app/rag`: supported document extraction, overlap-aware chunking, and dense
+  embedding/indexing components; retrieval, reranking, and generation remain
+  future work.
 - `app/integrations`: Qdrant, object storage, Redis, and LLM adapter boundaries.
-- `app/workers`: Celery application and task boundary; tasks delegate to services.
+- `app/workers`: Celery application and background document-ingestion task.
 - `app/middleware`, `app/monitoring`, `app/utils`: cross-cutting infrastructure.
 - `alembic`: database migration configuration and revision directory.
 - `docs`: product, architecture, security, and implementation documentation.
@@ -34,7 +36,7 @@ Requires Python 3.11+ and Docker Compose.
 py -3.11 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
-python -m pip install -e ".[dev]"
+python -m pip install -e ".[dev,ai]"
 Copy-Item .env.example .env
 ```
 
@@ -83,7 +85,9 @@ python -m compileall -q app alembic
 pytest
 ```
 
-The optional `ai` extra installs Sentence Transformers and hosted-provider SDKs:
+The `ai` extra provides the configured Sentence Transformers embedding model and
+hosted-provider SDKs. It is required for document indexing and is installed by the
+Docker image:
 
 ```powershell
 python -m pip install -e ".[ai]"
@@ -94,6 +98,6 @@ python -m pip install -e ".[ai]"
 1. Define tenant-owned SQLAlchemy models, constraints, and initial Alembic migration.
 2. Implement authentication and server-side tenant/role/document authorization.
 3. Add repository and service use cases with cross-tenant access tests.
-4. Implement object storage, format extractors, and an idempotent Celery ingestion flow.
-5. Add Qdrant collection/index management and enforce authorization filters before ranking.
+4. Add integration tests for ingestion across PostgreSQL, MinIO, Redis, and Qdrant.
+5. Complete authorized Qdrant retrieval and enforce document ACL filters before ranking.
 6. Implement provider adapters, citation validation, and end-to-end RAG evaluation.

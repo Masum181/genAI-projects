@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Enterprise RAG{% endblock %}</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; color: #172033; background: #f4f6fa; }
+    body { margin: 0; }
+    header { background: #14213d; color: white; padding: 1rem max(1.5rem, calc((100% - 1050px) / 2)); display: flex; justify-content: space-between; align-items: center; }
+    header a { color: white; text-decoration: none; margin-right: 1rem; }
+    main { max-width: 1050px; margin: 2rem auto; padding: 0 1.25rem; }
+    .card { background: white; border: 1px solid #e0e5ef; border-radius: .75rem; padding: 1.25rem; margin-bottom: 1rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; }
+    label { display: block; font-weight: 600; margin: .8rem 0 .25rem; }
+    input { width: 100%; box-sizing: border-box; padding: .7rem; border: 1px solid #b8c2d5; border-radius: .4rem; }
+    button, .button { display: inline-block; border: 0; border-radius: .4rem; background: #2457c5; color: white; padding: .7rem 1rem; text-decoration: none; cursor: pointer; }
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th, td { padding: .7rem; border-bottom: 1px solid #e0e5ef; text-align: left; }
+    .muted { color: #65708a; } .error { color: #9c1c1c; }
+  </style>
+</head>
+<body>
+  <header>
+    <strong><a href="/ui/">Enterprise RAG</a></strong>
+    {% if principal %}
+    <nav>
+      <a href="/ui/documents">Documents</a>
+      <a href="/ui/conversations">Conversations</a>
+      <a href="/docs">API docs</a>
+      <form method="post" action="/ui/logout" style="display:inline"><button type="submit">Sign out</button></form>
+    </nav>
+    {% endif %}
+  </header>
+  <main>{% block content %}{% endblock %}</main>
+</body>
+</html>

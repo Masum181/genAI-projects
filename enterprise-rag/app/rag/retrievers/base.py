@@ -14,6 +14,7 @@ class RetrievalScope:
 
     organization_id: str
     document_ids: tuple[str, ...]
+    version_ids: tuple[str, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -25,6 +26,10 @@ class RetrievedChunk:
     score: float
     page_number: int | None = None
     chunk_id: str | None = None
+    document_title: str | None = None
+    section_title: str | None = None
+    version_id: str | None = None
+    token_count: int | None = None
 
 
 class Retriever(Protocol):

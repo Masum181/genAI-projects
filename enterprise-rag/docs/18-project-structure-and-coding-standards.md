@@ -46,6 +46,13 @@ business requirements rather than represented by placeholder implementations.
 - `middleware`: request correlation and tenant context.
 - `monitoring`: logger and metrics integration.
 
+Database-backed HTTP workflows follow `api -> services -> repositories`.
+API handlers handle HTTP request/response concerns; services own authorization,
+business rules, and workflow coordination; repositories own SQLAlchemy query
+construction, execution, and transaction changes. Services and repositories must not
+import API modules, and API modules must not execute SQLAlchemy statements or mutate
+ORM state directly. Browser routes use the same services as API routes.
+
 ## 3. Python standards
 - Python 3.11+
 - Type annotations for all public functions.

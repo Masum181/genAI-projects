@@ -52,6 +52,8 @@ Run migrations with Alembic. Validate schema changes against a staging database 
 - TLS termination at reverse proxy.
 - Private networking for service-to-service communication.
 - Health checks and readiness probes.
+- The API readiness endpoint at `/ready` checks PostgreSQL and the configured
+  Qdrant collection; `/health` remains a dependency-independent liveness check.
 
 ## 9. Backup and disaster recovery
 - Automated daily or continuous backups for Postgres.

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Documents - Enterprise RAG{% endblock %}
+{% block content %}
+<h1>Document library</h1>
+<p class="muted">Only documents authorized for your account are listed.</p>
+<section class="card">
+  {% if documents %}
+  <table>
+    <thead><tr><th>Title</th><th>Type</th><th>Status</th><th>Updated</th></tr></thead>
+    <tbody>
+      {% for document in documents %}
+      <tr>
+        <td>{{ document.title }}</td>
+        <td>{{ document.document_type }}</td>
+        <td>{{ document.status }}</td>
+        <td>{{ document.updated_at }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No accessible documents yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

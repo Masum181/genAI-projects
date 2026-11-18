@@ -1,0 +1,121 @@
+
+# services:
+#   # postgres:
+#   #   image: postgres:17
+#   #   container_name: code_postgres
+#   #   environment:
+#   #     POSTGRES_USER: admin
+#   #     POSTGRES_PASSWORD: secret
+#   #     POSTGRES_DB: code_manager
+#   #   ports:
+#   #     - "5432:5432"
+#   #   volumes:
+#   #     - postgres_data:/var/lib/postgresql/data
+
+#   silo:
+#     image: pgsty/silo:RELEASE.2026-11-09T00-00-00Z
+#     container_name: code_silo
+#     command: server /data --console-address ":9001"
+#     environment:
+#       MINIO_ROOT_USER: minioadmin
+#       MINIO_ROOT_PASSWORD: change-this-to-a-long-password
+#     ports:
+#       - "9000:9000"
+#       - "9001:9001"
+#     volumes:
+#       - silo_data:/data
+#     restart: unless-stopped
+
+#   qdrant:
+#     image: qdrant/qdrant:latest
+#     container_name: code_qdrant
+#     ports:
+#       - "6333:6333"
+#       - "6334:6334"
+#     volumes:
+#       - qdrant_data:/qdrant/storage
+  
+#   redis:
+#     image: redis:7-alpine
+#     ports:
+#       - "6379:6379"
+#     volumes:
+#       - redis_data:/data
+#     healthcheck:
+#       test: ["CMD", "redis-cli", "ping"]
+#       interval: 5s
+#       timeout: 3s
+#       retries: 10
+
+  
+
+# volumes:
+#   # postgres_data:
+#   silo_data:
+#   qdrant_data:
+
+
+services:
+  silo:
+    image: pgsty/silo:RELEASE.2026-11-09T00-00-00Z
+    container_name: code_silo
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: change-this-to-a-long-password
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - silo_data:/data
+    restart: unless-stopped
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: code_qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  redis:
+    image: redis:7-alpine
+    container_name: code_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # celery_worker:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: code_celery_worker
+  #   command: celery -A app.workers.celery_app:celery_app worker --loglevel=info
+  #   volumes:
+  #     - .:/app
+  #   working_dir: /app
+  #   environment:
+  #     CELERY_BROKER_URL: redis://redis:6379/0
+  #     CELERY_RESULT_BACKEND: redis://redis:6379/1
+  #     QDRANT_URL: http://qdrant:6333
+  #     MINIO_ENDPOINT: silo:9000
+  #   depends_on:
+  #     redis:
+  #       condition: service_healthy
+  #     qdrant:
+  #       condition: service_started
+  #     silo:
+  #       condition: service_started
+  #   restart: unless-stopped
+
+volumes:
+  silo_data:
+  qdrant_data:
+  redis_data:

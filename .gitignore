@@ -22,5 +22,7 @@ htmlcov/
 
 # Local data and IDE files
 data/
+enterprise-rag/logs/*.log
+enterprise-rag/logs/*.log.*
 .idea/
 .vscode/

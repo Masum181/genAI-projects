@@ -24,6 +24,12 @@ class AppSettings(_EnvironmentSettings):
     environment: str = "development"
     debug: bool = False
     api_v1_prefix: str = "/api/v1"
+    secret_key: str = "change-this-secret-before-deployment"
+    service_name: str = "api"
+    log_level: str = "INFO"
+    log_format: str = "json"
+    access_token_expire_minutes: int = 30
+    refresh_token_expire_days: int = 7
 
 
 class DatabaseSettings(_EnvironmentSettings):
@@ -32,8 +38,22 @@ class DatabaseSettings(_EnvironmentSettings):
     model_config = SettingsConfigDict(
         env_file=".env", env_prefix="DATABASE_", extra="ignore"
     )
-
-    url: str = "postgresql+asyncpg://app:change-me@localhost:5432/enterprise_rag"
+    POSTGRES_DB: str  = "enterprise_rag"
+    POSTGRES_USER:str = "postgres"
+    POSTGRES_PASSWORD:str = "131192113"
+    POSTGES_PORT:str = "5432"
+    POSTGRES_HOST:str = "localhost"
+    @property
+    def url(self) -> str:
+        return (
+                f"postgresql+asyncpg://"
+                f"{self.POSTGRES_USER}:"
+                f"{self.POSTGRES_PASSWORD}@"
+                f"{self.POSTGRES_HOST}:"
+                f"{self.POSTGES_PORT}/"
+                f"{self.POSTGRES_DB}"
+            )
+    # url: str = "postgresql+asyncpg://app:change-me@localhost:5432/enterprise_rag"
     echo: bool = False
 
 
@@ -68,9 +88,11 @@ class StorageSettings(_EnvironmentSettings):
 
     endpoint_url: str = "http://localhost:9000"
     bucket: str = "enterprise-rag-documents"
-    access_key: str = "replace-me"
-    secret_key: str = "replace-me"
+    ACCESS_KEY: str = "replace-me"
+    SECRET_KEY: str = "replace-me"
     secure: bool = False
+    region: str = "us-east-1"
+    max_upload_bytes: int = 25 * 1024 * 1024
 
 
 class EmbeddingSettings(_EnvironmentSettings):
@@ -97,6 +119,21 @@ class LLMSettings(_EnvironmentSettings):
     base_url: str = "http://localhost:11434"
     openai_api_key: str | None = None
     gemini_api_key: str | None = None
+    timeout_seconds: float = Field(default=60.0, gt=0)
+    max_output_tokens: int = Field(default=2048, gt=0, le=8192)
+
+
+class RAGSettings(_EnvironmentSettings):
+    """Retrieval, reranking, and context limits."""
+
+    model_config = SettingsConfigDict(
+        env_file=".env", env_prefix="RAG_", extra="ignore"
+    )
+
+    candidate_limit: int = Field(default=40, gt=0, le=500)
+    result_limit: int = Field(default=8, gt=0, le=100)
+    context_token_limit: int = Field(default=6000, gt=512, le=100_000)
+    reranker_model_name: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
 
 class Settings(BaseModel):
@@ -109,6 +146,7 @@ class Settings(BaseModel):
     storage: StorageSettings = Field(default_factory=StorageSettings)
     embedding: EmbeddingSettings = Field(default_factory=EmbeddingSettings)
     llm: LLMSettings = Field(default_factory=LLMSettings)
+    rag: RAGSettings = Field(default_factory=RAGSettings)
 
 
 @lru_cache

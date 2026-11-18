@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Sign in - Enterprise RAG{% endblock %}
+{% block content %}
+<section class="card" style="max-width: 440px; margin: 4rem auto">
+  <h1>Sign in</h1>
+  <p class="muted">Access your organization’s knowledge workspace.</p>
+  {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+  <form method="post" action="/login">
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" autocomplete="username" required>
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" required>
+    <label for="organization_slug">Organization slug</label>
+    <input id="organization_slug" name="organization_slug" autocomplete="organization">
+    <p><button type="submit">Sign in</button></p>
+  </form>
+</section>
+{% endblock %}

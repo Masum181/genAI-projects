@@ -1,0 +1,11 @@
+activating venv in powershell:
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
+
+running celery:
+open powershell then run =>
+celery -A app.workers.celery_app:celery_app worker --loglevel=info --pool=solo
+
+
+masum@example.com
+123456789123

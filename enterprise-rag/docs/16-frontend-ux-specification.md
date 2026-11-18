@@ -72,3 +72,12 @@ Every screen must support:
 - [06-api-design.md](./06-api-design.md)
 - [17-business-workflows.md](./17-business-workflows.md)
 - [15-deployment-and-devops.md](./15-deployment-and-devops.md)
+
+## 5. Current browser implementation
+The initial Jinja interface provides sign-in, a dashboard with document and
+conversation counts, a permission-filtered document library, conversation history,
+and sign-out. The remaining screens above (including upload, chat, citations,
+feedback, and administration) are not yet implemented as browser pages. Document
+ingestion and grounded chat are available through the API and worker, but the
+browser interface must not imply that queued jobs are running without confirming
+their actual status.
